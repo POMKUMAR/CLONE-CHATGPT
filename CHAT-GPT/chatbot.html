@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Humanized Chat Assistant</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .chat-container {
+      width: 400px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: #007bff;
+      color: white;
+      padding: 15px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      height: 300px;
+    }
+
+    .message {
+      margin: 10px 0;
+      max-width: 70%;
+      padding: 10px;
+      border-radius: 10px;
+      clear: both;
+    }
+
+    .user {
+      background: #dcf8c6;
+      float: right;
+      text-align: right;
+    }
+
+    .bot {
+      background: #f1f0f0;
+      float: left;
+      text-align: left;
+    }
+
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+
+    .chat-input button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    .chat-input button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">Humanized Chat Assistant</div>
+    <div class="chat-box" id="chatBox"></div>
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="Type a message..." onkeydown="if(event.key === 'Enter') sendMessage()" />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    let userName = '';
+    let step = 0; // 0: asking name, 1: chatting
+
+    const chatBox = document.getElementById("chatBox");
+    const input = document.getElementById("userInput");
+
+    window.onload = () => {
+      botReply("Hello! 👋 What's your name?");
+    };
+
+    function sendMessage() {
+      const message = input.value.trim();
+      if (message === "") return;
+
+      appendMessage("user", message);
+      input.value = "";
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      setTimeout(() => handleBotLogic(message), 500);
+    }
+
+    function appendMessage(sender, text) {
+      const msg = document.createElement("div");
+      msg.className = `message ${sender}`;
+      msg.innerText = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function botReply(text) {
+      appendMessage("bot", text);
+    }
+
+    function handleBotLogic(message) {
+      if (step === 0) {
+        userName = message.charAt(0).toUpperCase() + message.slice(1);
+        botReply(`Nice to meet you, ${userName}! 😊`);
+        setTimeout(() => botReply("How can I help you today?"), 500);
+        step = 1;
+      } else {
+        const response = generateBotResponse(message);
+        botReply(response);
+      }
+    }
+
+    function generateBotResponse(message) {
+      const lower = message.toLowerCase();
+
+      if (lower.includes("hello") || lower.includes("hi")) {
+        return `Hi ${userName}, nice to hear from you! 😊 How can I assist you today?`;
+      }
+
+      if (lower.includes("help")) {
+        return `Of course, ${userName}. I'm here to help. Could you tell me more about what you're trying to do?`;
+      }
+
+      if (lower.includes("thank")) {
+        return `You're very welcome, ${userName}! Let me know if there's anything else I can do for you. 😊`;
+      }
+
+      if (lower.includes("bye")) {
+        return `Goodbye ${userName}! It was great chatting with you. Take care! 👋`;
+      }
+
+      if (lower.includes("your name")) {
+        return `You can call me your friendly assistant. I'm here whenever you need me! 🤖`;
+      }
+
+      const fallbackReplies = [
+        `That's interesting, ${userName}. Can you tell me more?`,
+        `I see! What would you like to do next?`,
+        `Thanks for sharing that, ${userName}. Let me think... 🤔`,
+        `Hmm, let me see how I can help with that.`,
+        `Could you explain that a bit more? I'm here to help!`
+      ];
+
+      return fallbackReplies[Math.floor(Math.random() * fallbackReplies.length)];
+    }
+  </script>
+</body>
+</html>
+
